@@ -18,14 +18,14 @@
         {
             <div class="col-md-4 mb-3">
                 <div class="card">
-                    <bb-carousel ShowIndicators="true" ShowControls="true">
+                    <Carousel Class="mt-3">
                         @foreach (var imageUrl in property.ImageUrls)
                         {
-                            <bb-carousel-item>
-                                <img src="@imageUrl" class="d-block w-100" alt="Property Image" />
-                            </bb-carousel-item>
+                            <CarouselSlide>
+                                <Image src="@imageUrl" Display="Display.Block" Alt="Property Image" />
+                            </CarouselSlide>
                         }
-                    </bb-carousel>
+                    </Carousel>
                     @* <img src="@property.ImageUrls.FirstOrDefault()" class="card-img-top" alt="RealEstateProperty Image"> *@
                     <div class="card-body">
                         <h5 class="card-title">@property.StreetDisplay</h5>

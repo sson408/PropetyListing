@@ -1,6 +1,10 @@
 using PropertyListing.Components;
 using PropertyListing.Interfaces;
 using PropertyListing.Services;
+using Blazorise;
+using Blazorise.Bootstrap5;
+using Blazorise.Icons.FontAwesome;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddBlazorBootstrap();
+builder.Services
+   .AddBlazorise(options =>
+    {
+        options.Immediate = true;
+        ////options.ProductToken = "290C-A92A-F52E-4DFF-ABEB-A88C-670F";
+    })
+  .AddBlazorise()
+  .AddBootstrap5Providers()
+  .AddFontAwesomeIcons();
+
 
 builder.Services.AddSingleton<IPropertyService, PropertyService>();
 
