@@ -1,0 +1,94 @@
+﻿@using PropertyListing.Interfaces
+@using PropertyListing.Models;
+@using static PropertyListing.Dtos.PropertyDTO;
+@page "/properties"
+
+@inject IPropertyService PropertyService
+
+
+<div class="container">
+    <h3>1 Bedroom Properties For Sale In New Zealand</h3>
+    <div class="row mb-3">
+        <button class="btn btn-primary" >Filters</button>
+        <span class="ml-3">Selected Filters: @selectedFilters</span>
+    </div>
+
+    <div class="row">
+        @foreach (var property in filteredProperties)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <bb-carousel ShowIndicators="true" ShowControls="true">
+                        @foreach (var imageUrl in property.ImageUrls)
+                        {
+                            <bb-carousel-item>
+                                <img src="@imageUrl" class="d-block w-100" alt="Property Image" />
+                            </bb-carousel-item>
+                        }
+                    </bb-carousel>
+                    @* <img src="@property.ImageUrls.FirstOrDefault()" class="card-img-top" alt="RealEstateProperty Image"> *@
+                    <div class="card-body">
+                        <h5 class="card-title">@property.StreetDisplay</h5>
+                        <p class="card-text">@property.PriceDisplay</p>
+                        <p class="card-text">@property.NumberOfBedrooms Bed, @property.NumberOfBathrooms Bath</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Modal for filter details -->
+    <div class="modal" tabindex="-1" id="filterModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filter Properties</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>RealEstateProperty Type</label>
+                        <select @bind="propertyTypeFilter" class="form-control">
+                            <option value="">Any</option>
+                            <option value="Residential">Residential</option>
+                            <option value="Rental">Rental</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" >Apply Filters</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private List<SimplePropertyDtoSummary> filteredProperties;
+    private string propertyTypeFilter = string.Empty;
+    private string selectedFilters = "";
+
+    protected override void OnInitialized()
+    {
+        filteredProperties = PropertyService.ListAll();
+    }
+
+    // private void OpenFilterModal()
+    // {
+    //     // Show the modal using Bootstrap JS
+    //     JS.InvokeVoidAsync("$('#filterModal').modal", "show");
+    // }
+
+    // private void ApplyFilters()
+    // {
+    //     filteredProperties = PropertyService.ListAll()
+    //         .ToList();
+
+    //     selectedFilters = $"Type: {propertyTypeFilter}";
+    //     JS.InvokeVoidAsync("$('#filterModal').modal", "hide");
+    // }
+}
