@@ -12,15 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services
-   .AddBlazorise(options =>
-    {
-        options.Immediate = true;
-        ////options.ProductToken = "290C-A92A-F52E-4DFF-ABEB-A88C-670F";
-    })
-  .AddBlazorise()
-  .AddBootstrap5Providers()
-  .AddFontAwesomeIcons();
+//builder.Services
+//   .AddBlazorise(options =>
+//    {
+//        options.Immediate = true;
+//        ////options.ProductToken = "290C-A92A-F52E-4DFF-ABEB-A88C-670F";
+//    })
+//  .AddBootstrap5Providers()
+//  .AddFontAwesomeIcons();
 
 
 builder.Services.AddSingleton<IPropertyService, PropertyService>();
