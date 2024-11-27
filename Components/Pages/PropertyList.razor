@@ -1,9 +1,10 @@
 ﻿@using PropertyListing.Interfaces
 @using PropertyListing.Models;
 @using static PropertyListing.Dtos.PropertyDTO;
-@page "/properties"
+@page "/"
 
 @inject IPropertyService PropertyService
+
 
 
 <div class="container">
@@ -16,13 +17,15 @@
     <div class="row">
         @foreach (var property in filteredProperties)
         {
+            var carouselId = $"carousel{property.ListingNumber}";
+
             <div class="col-md-4 mb-3">
                 <div class="card">
-                    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                    <div id="@carouselId" class="carousel slide" data-bs-ride="false">
                         <div class="carousel-indicators">
                             @for (int i = 0; i < property.ImageUrls.Count; i++)
                             {
-                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="true" aria-label="Slide @(i + 1)"></button>
+                                <button type="button" data-bs-target="#@carouselId" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="true" aria-label="Slide @(i + 1)"></button>
                             }
                         </div>
                         <div class="carousel-inner">
@@ -33,11 +36,11 @@
                                 </div>
                             }
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Previous</span>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                        <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Next</span>
                         </button>
@@ -83,26 +86,19 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="locationModalLabel">Choose Location</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button class="btn" id="btnBack">Back</button>
+                    <span id="currentLevel">New Zealand</span>
+                    <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">Done</button>
                 </div>
                 <div class="modal-body">
-                    <div id="location-container">
-                        <div id="breadcrumbs">
-                            <button class="btn btn-link" onclick="goBack()">Back</button>
-                            <span id="current-level">New Zealand</span>
-                        </div>
-                        <ul id="location-list"></ul>
-                        <div id="multi-select-actions" style="display: none;">
-                            <button class="btn btn-primary" onclick="confirmSelection()">Done</button>
-                        </div>
+                    <div id="locationContainer" class="location-container">
+                        <ul id="locationList"></ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 @code {
     private List<SimplePropertyDtoSummary> filteredProperties;
@@ -113,4 +109,5 @@
     {
         filteredProperties = PropertyService.ListAll();
     }
+
 }

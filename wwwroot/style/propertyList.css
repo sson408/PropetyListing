@@ -1,9 +1,9 @@
-﻿#location-container {
+﻿.location-container {
     max-width: 600px;
     margin: auto;
 }
 
-#breadcrumbs {
+.breadcrumbs-div {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -27,7 +27,7 @@ ul li:hover {
     background-color: #f5f5f5;
 }
 
-#multi-select-actions {
+.multi-select-actions-div {
     text-align: right;
     margin-top: 10px;
 }
