@@ -52,29 +52,51 @@
         }
     </div>
 
-    <!-- Modal for filter details -->
-    <div class="modal" tabindex="-1" id="filterModal">
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Filter Properties</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="filterModalLabel">Filter Properties</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>RealEstateProperty Type</label>
-                        <select @bind="propertyTypeFilter" class="form-control">
+                        <label>Property Type</label>
+                        <select class="form-control">
                             <option value="">Any</option>
                             <option value="Residential">Residential</option>
                             <option value="Rental">Rental</option>
                         </select>
                     </div>
+                    <button class="btn btn-secondary mt-3" data-bs-toggle="modal" data-bs-target="#locationModal">Choose Location</button>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" >Apply Filters</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Apply Filters</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Filter Modal -->
+    <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="locationModalLabel">Choose Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="location-container">
+                        <div id="breadcrumbs">
+                            <button class="btn btn-link" onclick="goBack()">Back</button>
+                            <span id="current-level">New Zealand</span>
+                        </div>
+                        <ul id="location-list"></ul>
+                        <div id="multi-select-actions" style="display: none;">
+                            <button class="btn btn-primary" onclick="confirmSelection()">Done</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
