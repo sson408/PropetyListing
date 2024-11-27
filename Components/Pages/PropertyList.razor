@@ -9,7 +9,7 @@
 <div class="container">
     <h3>1 Bedroom Properties For Sale In New Zealand</h3>
     <div class="row mb-3">
-        <button class="btn btn-primary" >Filters</button>
+        <button class="btn btn-primary" id="btnFilter">Filter</button>
         <span class="ml-3">Selected Filters: @selectedFilters</span>
     </div>
 
@@ -91,19 +91,4 @@
     {
         filteredProperties = PropertyService.ListAll();
     }
-
-    // private void OpenFilterModal()
-    // {
-    //     // Show the modal using Bootstrap JS
-    //     JS.InvokeVoidAsync("$('#filterModal').modal", "show");
-    // }
-
-    // private void ApplyFilters()
-    // {
-    //     filteredProperties = PropertyService.ListAll()
-    //         .ToList();
-
-    //     selectedFilters = $"Type: {propertyTypeFilter}";
-    //     JS.InvokeVoidAsync("$('#filterModal').modal", "hide");
-    // }
 }
