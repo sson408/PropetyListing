@@ -5,6 +5,7 @@ let currentLevel = locations;
 let breadcrumb = ["Regions & Suburbs"];
 let selectedItems = [];
 let selectedTab = "Residential"
+let priceSlider = null;
 
 function setupTabs() {
     const tabs = document.querySelectorAll(".property-tab");
@@ -25,6 +26,93 @@ function setupTabs() {
 
 }
 
+
+function initlocationInputSearch() {
+    const locations = AddressData.locations;
+
+    // Helper function to flatten the nested locations into a flat array
+    function flattenLocations(data) {
+        let flatData = [];
+        data.forEach(location => {
+            flatData.push(location.name);
+            if (location.children) {
+                flatData = flatData.concat(flattenLocations(location.children));
+            }
+        });
+        return flatData;
+    }
+
+    const flatLocations = flattenLocations(locations);
+
+    // Initialize jQuery UI Autocomplete with multiple values support
+    $("#locationInput").autocomplete({
+        source: function (request, response) {
+            const term = request.term.split(/,\s*/).pop(); // Get the last entered value
+            const matches = $.grep(flatLocations, function (location) {
+                return location.toLowerCase().startsWith(term.toLowerCase());
+            });
+            response(matches); // Pass matched results to autocomplete
+        },
+        focus: function () {
+            // Prevent value from being inserted on focus
+            return false;
+        },
+        select: function (event, ui) {
+            const terms = this.value.split(/,\s*/); // Split the current input value
+            terms.pop(); // Remove the last term (partial input)
+            terms.push(ui.item.value); // Add the selected item
+            terms.push(""); // Add a placeholder for the next value
+            this.value = terms.join(", "); // Update the input value
+            return false;
+        }
+    });
+}
+
+function initPirceSlider() {
+    priceSlider = document.getElementById("priceSlider");
+    const minPrice = document.getElementById("minPrice");
+    const maxPrice = document.getElementById("maxPrice");
+
+    // Initialize the slider
+    noUiSlider.create(priceSlider, {
+        start: [0, 1000000], 
+        connect: true,
+        range: {
+            min: 0,
+            max: 1000000
+        },
+        tooltips: [false, false],
+        format: {
+            to: function (value) {
+                // Use numeral to format value as currency
+                return numeral(value).format('$0,0');
+            },
+            from: function (value) {          
+                if (typeof value === "string" && value.includes("$")) {
+                    return numeral(value.replace("$", "").trim()).value();
+                }
+                return Number(value) || 0;
+            }
+        }
+    });
+
+
+    // Update the labels dynamically on slider value changes
+    priceSlider.noUiSlider.on("update", function (values, handle) {
+        // Show actual slider values
+        minPrice.textContent = numeral(values[0]).format('$0,0');
+        maxPrice.textContent = numeral(values[1]).format('$0,0');        
+    });
+
+    // Ensure that values are set properly after user interaction
+    priceSlider.noUiSlider.on("set", function () {
+        if (!priceSlider) return
+        const values = priceSlider.noUiSlider.get();
+        minPrice.textContent = numeral(values[0]).format('$0,0');
+        maxPrice.textContent = numeral(values[1]).format('$0,0');
+    });
+}
+
 function showModal(modalId) {
     const modal = new bootstrap.Modal(document.getElementById(modalId), {
         backdrop: 'static',
@@ -37,6 +125,9 @@ function hideModal(modalId) {
     const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
     modal.hide();
 }
+
+
+
 
 // Render the location list
 function renderList() {
@@ -124,8 +215,6 @@ function onBtnBackClick() {
         currentLevel = parent;
         renderList();
     }
-
-
 }
 
 // Render selected items
@@ -143,15 +232,26 @@ function renderSelections() {
     });
 }
 
-// Confirm the selection
-function confirmSelection() {
-    alert(`You selected: ${selectedItems.join(", ")}`);
-    document.querySelector("#locationModal .btn-close").click(); // Close the modal
-    renderList(); // Reset the list
+function updateLocationInput() {
+    const locationInput = document.getElementById("locationInput");
+    if (selectedItems.length > 0) {
+        locationInput.value = selectedItems.join(", ");
+    } else {
+        locationInput.value = "";
+    }
 }
 
-function postInit() {
-    renderList();
+//// Confirm the selection
+//function confirmSelection() {
+//    alert(`You selected: ${selectedItems.join(", ")}`);
+//    document.querySelector("#locationModal .btn-close").click(); // Close the modal
+//    renderList(); // Reset the list
+//}
+
+function setup() {
+    setupTabs();
+    initlocationInputSearch();
+    initPirceSlider();
 }
 
 function eventBinding() {
@@ -163,11 +263,23 @@ function eventBinding() {
     });
     document.getElementById("btnChooseLocation").addEventListener("click", function () {
         showModal('locationModal');
+        hideModal('filterModal');
     });
+
+    document.getElementById("btnDone").addEventListener("click", function () {
+        updateLocationInput();
+        hideModal('locationModal');
+        showModal('filterModal');
+    });
+ 
+}
+
+function postInit() {
+    renderList();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    setupTabs();
+    setup();
     eventBinding();
     postInit();
 

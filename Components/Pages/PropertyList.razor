@@ -75,16 +75,17 @@
                     <div class="form-group mb-4">
                         <label for="locationInput">Location</label>
                         <div class="d-flex align-items-center">
+                            <label for="locationInput">Location</label>
                             <input type="text" id="locationInput" class="form-control" placeholder="Enter suburb or region" />
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
-                        <label>Price</label>
-                        <div class="d-flex align-items-center">
-                            <span>$Any min</span>
-                            <input type="range" id="priceRange" class="form-range mx-3" />
-                            <span>$Any max</span>
+                        <label class="form-label text-center">Price</label>
+                        <div id="priceSlider" class="price-slider"></div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span id="minPrice">$Any min</span>
+                            <span id="maxPrice">$Any max</span>
                         </div>
                     </div>
 
@@ -174,7 +175,7 @@
                 <div class="modal-header">
                     <button class="btn" id="btnBack">Back</button>
                     <span id="currentLevel">Regions & Suburbs</span>
-                    <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">Done</button>
+                    <button type="button" class="btn" id="btnDone">Done</button>
                 </div>
                 <div class="modal-body">
                     <div id="locationContainer" class="location-container">
