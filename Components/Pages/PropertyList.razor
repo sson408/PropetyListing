@@ -56,7 +56,7 @@
     </div>
 
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="filterModalLabel">Filter Properties</h5>
@@ -64,14 +64,100 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Property Type</label>
-                        <select class="form-control">
-                            <option value="">Any</option>
-                            <option value="Residential">Residential</option>
-                            <option value="Rental">Rental</option>
-                        </select>
+                        <div class="property-type-tabs">
+                            <button class="property-tab active" data-type="Residential">Residential</button>
+                            <button class="property-tab" data-type="Rental">Rental</button>
+                        </div>
                     </div>
-                    <button class="btn btn-secondary mt-3" data-bs-toggle="modal" data-bs-target="#locationModal">Choose Location</button>
+                    <div class="form-group location-select-btn-div">
+                        <button class="btn mt-3 bth-locationSelect" id="btnChooseLocation">Regions & Suburbs</button>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="locationInput">Location</label>
+                        <div class="d-flex align-items-center">
+                            <input type="text" id="locationInput" class="form-control" placeholder="Enter suburb or region" />
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Price</label>
+                        <div class="d-flex align-items-center">
+                            <span>$Any min</span>
+                            <input type="range" id="priceRange" class="form-range mx-3" />
+                            <span>$Any max</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Property types</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="filter-option active" data-type="All">All</button>
+                            <button class="filter-option" data-type="House">House</button>
+                            <button class="filter-option" data-type="Section">Section</button>
+                            <button class="filter-option" data-type="Unit">Unit</button>
+                            <button class="filter-option" data-type="Townhouse">Townhouse</button>
+                            <button class="filter-option" data-type="Apartment">Apartment</button>
+                            <button class="filter-option" data-type="Lifestyle">Lifestyle</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Bedrooms</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="filter-option">1</button>
+                            <button class="filter-option">2</button>
+                            <button class="filter-option">3</button>
+                            <button class="filter-option">4</button>
+                            <button class="filter-option">5</button>
+                            <button class="filter-option">6+</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Bathrooms</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="filter-option">1</button>
+                            <button class="filter-option">2</button>
+                            <button class="filter-option">3</button>
+                            <button class="filter-option">4</button>
+                            <button class="filter-option">5</button>
+                            <button class="filter-option">6+</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Sort properties by</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="filter-option active" data-sort="Newest">Newest</button>
+                            <button class="filter-option" data-sort="Oldest">Oldest</button>
+                            <button class="filter-option" data-sort="HighestPrice">Highest price</button>
+                            <button class="filter-option" data-sort="LowestPrice">Lowest price</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Keywords</label>
+                        <input type="text" class="form-control" placeholder="e.g. pool, views" />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Search only</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="filter-option">Open homes</button>
+                            <button class="filter-option">Mortgagee sales</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>Land area</label>
+                        <div class="d-flex align-items-center">
+                            <span>Any min m²</span>
+                            <input type="range" id="landAreaRange" class="form-range mx-3" />
+                            <span>Any max m²</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary mt-3" id="resetFiltersBtn">Reset filters</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary">Apply Filters</button>
@@ -87,7 +173,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button class="btn" id="btnBack">Back</button>
-                    <span id="currentLevel">New Zealand</span>
+                    <span id="currentLevel">Regions & Suburbs</span>
                     <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">Done</button>
                 </div>
                 <div class="modal-body">
