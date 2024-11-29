@@ -23,46 +23,37 @@ function setupTabs() {
             //console.log(`Selected Tab: ${selectedTab}`); 
         });
     });
-
 }
 
 
 function initlocationInputSearch() {
     const locations = AddressData.locations;
-
-    // Helper function to flatten the nested locations into a flat array
-    function flattenLocations(data) {
-        let flatData = [];
-        data.forEach(location => {
-            flatData.push(location.name);
-            if (location.children) {
-                flatData = flatData.concat(flattenLocations(location.children));
-            }
-        });
-        return flatData;
-    }
-
     const flatLocations = flattenLocations(locations);
 
-    // Initialize jQuery UI Autocomplete with multiple values support
+
     $("#locationInput").autocomplete({
         source: function (request, response) {
-            const term = request.term.split(/,\s*/).pop(); // Get the last entered value
-            const matches = $.grep(flatLocations, function (location) {
-                return location.toLowerCase().startsWith(term.toLowerCase());
-            });
-            response(matches); // Pass matched results to autocomplete
+            const term = request.term.split(/,\s*/).pop();
+            const matches = flatLocations.filter(location =>
+                location.toLowerCase().startsWith(term.toLowerCase())
+            );
+            response(matches);
         },
         focus: function () {
             // Prevent value from being inserted on focus
             return false;
         },
         select: function (event, ui) {
-            const terms = this.value.split(/,\s*/); // Split the current input value
-            terms.pop(); // Remove the last term (partial input)
-            terms.push(ui.item.value); // Add the selected item
-            terms.push(""); // Add a placeholder for the next value
-            this.value = terms.join(", "); // Update the input value
+            const terms = this.value.split(/,\s*/); 
+            terms.pop(); 
+            terms.push(ui.item.value);
+            terms.push(""); 
+            this.value = terms.join(", ");
+
+            setTimeout(() => {
+                $(this).autocomplete("close");
+            }, 0);
+
             return false;
         }
     });
@@ -75,11 +66,11 @@ function initPirceSlider() {
 
     // Initialize the slider
     noUiSlider.create(priceSlider, {
-        start: [0, 1000000], 
+        start: [0, 10000000], 
         connect: true,
         range: {
             min: 0,
-            max: 1000000
+            max: 10000000
         },
         tooltips: [false, false],
         format: {
@@ -113,6 +104,76 @@ function initPirceSlider() {
     });
 }
 
+function initPropertyTypeSelect() {
+    const propertyTypeOptions = document.querySelectorAll("#propertyTypeOptions .filter-option");
+    let selectedPropertyTypes = [];
+
+    propertyTypeOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            const value = this.getAttribute("data-value");
+
+            if (value === "All") {
+                selectedPropertyTypes = ["All"];
+                propertyTypeOptions.forEach(opt => opt.classList.remove("active"));
+            } else {
+                const allIndex = selectedPropertyTypes.indexOf("All");
+                if (allIndex > -1) selectedPropertyTypes.splice(allIndex, 1);
+
+                const index = selectedPropertyTypes.indexOf(value);
+                if (index > -1) {
+                    selectedPropertyTypes.splice(index, 1);
+                } else {
+                    selectedPropertyTypes.push(value);
+                }
+            }
+
+            // Update Active States
+            propertyTypeOptions.forEach(opt => {
+                if (selectedPropertyTypes.includes(opt.getAttribute("data-value"))) {
+                    opt.classList.add("active");
+                } else {
+                    opt.classList.remove("active");
+                }
+            });
+        });
+    });
+}
+
+function initBedroomSelect() {
+    const bedroomOptions = document.querySelectorAll("#bedroomOptions .bedroom-option");
+    let selectedBedrooms = [];
+
+    bedroomOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            const value = this.getAttribute("data-value");
+            const index = selectedBedrooms.indexOf(value);
+
+            if (index > -1) {
+                // If the clicked option is already selected
+                if (selectedBedrooms.length === 1) {
+                    // If it is the only selected option, deselect it
+                    selectedBedrooms = [];
+                } else {
+                    // Clear all and keep only the clicked option
+                    selectedBedrooms = [value];
+                }
+            } else {
+                // Add the clicked option to the selection
+                selectedBedrooms.push(value);
+            }
+
+            // Update Active States
+            bedroomOptions.forEach(opt => {
+                if (selectedBedrooms.includes(opt.getAttribute("data-value"))) {
+                    opt.classList.add("active");
+                } else {
+                    opt.classList.remove("active");
+                }
+            });
+        });
+    });
+}
+
 function showModal(modalId) {
     const modal = new bootstrap.Modal(document.getElementById(modalId), {
         backdrop: 'static',
@@ -127,6 +188,17 @@ function hideModal(modalId) {
 }
 
 
+// Flatten the location data
+function flattenLocations(data) {
+    let flatData = [];
+    data.forEach(location => {
+        flatData.push(location.name);
+        if (location.children) {
+            flatData = flatData.concat(flattenLocations(location.children));
+        }
+    });
+    return flatData;
+}
 
 
 // Render the location list
@@ -252,6 +324,8 @@ function setup() {
     setupTabs();
     initlocationInputSearch();
     initPirceSlider();
+    initPropertyTypeSelect();
+    initBedroomSelect();
 }
 
 function eventBinding() {

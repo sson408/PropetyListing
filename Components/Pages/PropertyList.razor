@@ -75,7 +75,6 @@
                     <div class="form-group mb-4">
                         <label for="locationInput">Location</label>
                         <div class="d-flex align-items-center">
-                            <label for="locationInput">Location</label>
                             <input type="text" id="locationInput" class="form-control" placeholder="Enter suburb or region" />
                         </div>
                     </div>
@@ -91,32 +90,32 @@
 
                     <div class="form-group mb-4">
                         <label>Property types</label>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button class="filter-option active" data-type="All">All</button>
-                            <button class="filter-option" data-type="House">House</button>
-                            <button class="filter-option" data-type="Section">Section</button>
-                            <button class="filter-option" data-type="Unit">Unit</button>
-                            <button class="filter-option" data-type="Townhouse">Townhouse</button>
-                            <button class="filter-option" data-type="Apartment">Apartment</button>
-                            <button class="filter-option" data-type="Lifestyle">Lifestyle</button>
+                        <div class="d-flex flex-wrap gap-2" id="propertyTypeOptions">
+                            <button class="filter-option active" data-value="All">All</button>
+                            <button class="filter-option" data-value="House">House</button>
+                            <button class="filter-option" data-value="Section">Section</button>
+                            <button class="filter-option" data-value="Unit">Unit</button>
+                            <button class="filter-option" data-value="Townhouse">Townhouse</button>
+                            <button class="filter-option" data-value="Apartment">Apartment</button>
+                            <button class="filter-option" data-value="Lifestyle">Lifestyle</button>
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
                         <label>Bedrooms</label>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button class="filter-option">1</button>
-                            <button class="filter-option">2</button>
-                            <button class="filter-option">3</button>
-                            <button class="filter-option">4</button>
-                            <button class="filter-option">5</button>
-                            <button class="filter-option">6+</button>
+                        <div class="d-flex flex-wrap gap-2" id="bedroomOptions">
+                            <button class="bedroom-option" data-value="1" title="1">1</button>
+                            <button class="bedroom-option" data-value="2" title="2">2</button>
+                            <button class="bedroom-option" data-value="3" title="3">3</button>
+                            <button class="bedroom-option" data-value="4" title="4">4</button>
+                            <button class="bedroom-option" data-value="5" title="5">5</button>
+                            <button class="bedroom-option" data-value="6" title="6+">6+</button>
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
                         <label>Bathrooms</label>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2" id="sortOptions">
                             <button class="filter-option">1</button>
                             <button class="filter-option">2</button>
                             <button class="filter-option">3</button>

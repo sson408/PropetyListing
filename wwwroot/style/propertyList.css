@@ -108,6 +108,61 @@ ul li:hover {
     color: #333;
 }
 
+.bedroom-option {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    text-align: center;
+    width: 50px; 
+    height: 40px; 
+    font-size: 16px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bedroom-option.active {
+    background-color: #3366cc; 
+    color: white;
+    border-color: #3366cc;
+    box-shadow: 0px 4px 6px rgba(51, 102, 204, 0.4);
+}
+
+.bedroom-option:hover {
+    background-color: #f5f5f5; 
+    color: black;
+}
+
+.bedroom-option.active:hover {
+    background-color: #3366cc;
+    color: white;
+}
+
+.d-flex {
+    display: flex;
+    gap: 10px; /* Spacing between buttons */
+    justify-content: flex-start; /* Align to the left */
+}
+
+@media (max-width: 600px) {
+    .d-flex {
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    }
+}
+
+
+.d-flex {
+    display: flex;
+    gap: 10px; /* Add spacing between buttons */
+}
+
+.flex-wrap {
+    flex-wrap: wrap; /* Wrap buttons to the next line if needed */
+}
+
+
 .price-slider {
     margin: 0 auto;
     width: 90%;
@@ -118,7 +173,6 @@ ul li:hover {
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 9999;
-    display: block !important;
 }
 
 .ui-menu-item {
