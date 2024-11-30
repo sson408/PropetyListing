@@ -90,7 +90,7 @@
 
                     <div class="form-group mb-4">
                         <label>Property types</label>
-                        <div class="d-flex flex-wrap gap-2" id="propertyTypeOptions">
+                        <div class="d-flex flex-wrap  propertyType-options-div" id="propertyTypeOptions">
                             <button class="filter-option active" data-value="All">All</button>
                             <button class="filter-option" data-value="House">House</button>
                             <button class="filter-option" data-value="Section">Section</button>
@@ -103,7 +103,7 @@
 
                     <div class="form-group mb-4">
                         <label>Bedrooms</label>
-                        <div class="d-flex flex-wrap gap-2" id="bedroomOptions">
+                        <div class="d-flex flex-wrap bedroom-options-div" id="bedroomOptions">
                             <button class="bedroom-option" data-value="1" title="1">1</button>
                             <button class="bedroom-option" data-value="2" title="2">2</button>
                             <button class="bedroom-option" data-value="3" title="3">3</button>
@@ -115,19 +115,19 @@
 
                     <div class="form-group mb-4">
                         <label>Bathrooms</label>
-                        <div class="d-flex flex-wrap gap-2" id="sortOptions">
-                            <button class="filter-option">1</button>
-                            <button class="filter-option">2</button>
-                            <button class="filter-option">3</button>
-                            <button class="filter-option">4</button>
-                            <button class="filter-option">5</button>
-                            <button class="filter-option">6+</button>
+                        <div class="d-flex flex-wrap bathroom-options-div" id="bathroomOptions">
+                            <button class="bathroom-option" data-value="1">1</button>
+                            <button class="bathroom-option" data-value="2">2</button>
+                            <button class="bathroom-option" data-value="3">3</button>
+                            <button class="bathroom-option" data-value="4">4</button>
+                            <button class="bathroom-option" data-value="5">5</button>
+                            <button class="bathroom-option" data-value="6">6+</button>
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
                         <label>Sort properties by</label>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2" id="sortOptions">
                             <button class="filter-option active" data-sort="Newest">Newest</button>
                             <button class="filter-option" data-sort="Oldest">Oldest</button>
                             <button class="filter-option" data-sort="HighestPrice">Highest price</button>
@@ -142,22 +142,22 @@
 
                     <div class="form-group mb-4">
                         <label>Search only</label>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2" id="viewTypeOptions">
                             <button class="filter-option">Open homes</button>
                             <button class="filter-option">Mortgagee sales</button>
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
-                        <label>Land area</label>
-                        <div class="d-flex align-items-center">
-                            <span>Any min m²</span>
-                            <input type="range" id="landAreaRange" class="form-range mx-3" />
-                            <span>Any max m²</span>
+                        <label class="form-label text-center">Land area</label>
+                        <div id="landAreaSlider" class="landArea-slider"></div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span id="minArea">$Any min m<sup>2</sup> </span>
+                            <span id="maxArea">$Any max m<sup>2</sup></span>
                         </div>
                     </div>
 
-                    <button class="btn btn-secondary mt-3" id="resetFiltersBtn">Reset filters</button>
+                    <button class="btn btn-secondary mt-3 btn-reset" id="resetFiltersBtn">Reset filters</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary">Apply Filters</button>

@@ -1,12 +1,18 @@
 ﻿
 import * as AddressData from "./Address.js";
+import { rangeSelect } from "./Component/RangeSelect.js";
 const locations = AddressData.locations;
 let currentLevel = locations;
 let breadcrumb = ["Regions & Suburbs"];
 let selectedItems = [];
 let selectedTab = "Residential"
 let priceSlider = null;
-
+let landAreaSlider = null;
+let selectedBedrooms = [];
+let selectedBathrooms = [];
+let selectedPropertyTypes = [];
+let selectedSort = "Newest";
+const selectedViewTypes = [];
 function setupTabs() {
     const tabs = document.querySelectorAll(".property-tab");
 
@@ -24,6 +30,10 @@ function setupTabs() {
         });
     });
 }
+
+function showResidentialFilterOptions() { }
+
+function showRentalFilterOptions() { }
 
 
 function initlocationInputSearch() {
@@ -72,6 +82,7 @@ function initPirceSlider() {
             min: 0,
             max: 10000000
         },
+        step: 50000,
         tooltips: [false, false],
         format: {
             to: function (value) {
@@ -104,9 +115,53 @@ function initPirceSlider() {
     });
 }
 
+function initLandAreaSlider() {
+    landAreaSlider = document.getElementById("landAreaSlider");
+    const minLandArea = document.getElementById("minArea");
+    const maxLandArea = document.getElementById("maxArea");
+
+    // Initialize the slider
+    noUiSlider.create(landAreaSlider, {
+        start: [0, 100000], 
+        connect: true,
+        range: {
+            min: 0,
+            max: 100000
+        },
+        step: 100,
+        tooltips: [false, false],
+        format: {
+            to: function (value) {
+                // Use numeral to format value as currency
+                return numeral(value).format('0,0');
+            },
+            from: function (value) {          
+                if (typeof value === "string") {
+                    return numeral(value.replace(",", "").trim()).value();
+                }
+                return Number(value) || 0;
+            }
+        }
+    });
+
+    landAreaSlider.noUiSlider.on("update", function (values, handle) {
+        // Show actual values
+        minLandArea.textContent = numeral(values[0]).format('0,0');
+        maxLandArea.textContent = numeral(values[1]).format('0,0');
+    });
+
+    landAreaSlider.noUiSlider.on("set", function () {
+        if (!landAreaSlider) return
+        const values = landAreaSlider.noUiSlider.get();
+        minLandArea.textContent = numeral(values[0]).format('0,0');
+        maxLandArea.textContent = numeral(values[1]).format('0,0');
+    });
+
+    
+}
+
 function initPropertyTypeSelect() {
     const propertyTypeOptions = document.querySelectorAll("#propertyTypeOptions .filter-option");
-    let selectedPropertyTypes = [];
 
     propertyTypeOptions.forEach(option => {
         option.addEventListener("click", function () {
@@ -140,39 +195,53 @@ function initPropertyTypeSelect() {
 }
 
 function initBedroomSelect() {
-    const bedroomOptions = document.querySelectorAll("#bedroomOptions .bedroom-option");
-    let selectedBedrooms = [];
+    rangeSelect("bedroomOptions", selectedBedrooms);
+}
 
-    bedroomOptions.forEach(option => {
+function initBathroomSelect() {
+    rangeSelect("bathroomOptions", selectedBathrooms);
+}
+
+function initSortSelect() {
+    const sortOptions = document.querySelectorAll("#sortOptions .filter-option");
+
+    sortOptions.forEach(option => {
         option.addEventListener("click", function () {
-            const value = this.getAttribute("data-value");
-            const index = selectedBedrooms.indexOf(value);
+            //remove "active" class from all buttons
+            sortOptions.forEach(opt => opt.classList.remove("active"));
 
-            if (index > -1) {
-                // If the clicked option is already selected
-                if (selectedBedrooms.length === 1) {
-                    // If it is the only selected option, deselect it
-                    selectedBedrooms = [];
-                } else {
-                    // Clear all and keep only the clicked option
-                    selectedBedrooms = [value];
-                }
+            //add "active" class to the clicked button
+            this.classList.add("active");
+
+            //update the currently selected option
+            selectedSort = this.getAttribute("data-sort");
+            //console.log("Selected sort:", selectedSort);
+        });
+    });
+
+} 
+
+function initViewTypeSelect() {
+    const viewTypeOptions = document.querySelectorAll("#viewTypeOptions .filter-option");
+
+    viewTypeOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            const value = this.textContent.trim();
+
+            //toggle the active state
+            if (this.classList.contains("active")) {
+                this.classList.remove("active");
+                //remove from the selected options
+                const index = selectedViewTypes.indexOf(value);
+                if (index > -1) selectedViewTypes.splice(index, 1);
             } else {
-                // Add the clicked option to the selection
-                selectedBedrooms.push(value);
+                this.classList.add("active");
+                selectedViewTypes.push(value);
             }
-
-            // Update Active States
-            bedroomOptions.forEach(opt => {
-                if (selectedBedrooms.includes(opt.getAttribute("data-value"))) {
-                    opt.classList.add("active");
-                } else {
-                    opt.classList.remove("active");
-                }
-            });
         });
     });
 }
+
 
 function showModal(modalId) {
     const modal = new bootstrap.Modal(document.getElementById(modalId), {
@@ -326,6 +395,10 @@ function setup() {
     initPirceSlider();
     initPropertyTypeSelect();
     initBedroomSelect();
+    initBathroomSelect();
+    initSortSelect();
+    initViewTypeSelect();
+    initLandAreaSlider();
 }
 
 function eventBinding() {
