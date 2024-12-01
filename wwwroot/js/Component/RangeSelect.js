@@ -6,7 +6,7 @@
             const value = parseInt(this.getAttribute("data-value"));
 
             if (selectedItems.length === 1 && selectedItems.includes(value.toString())) {
-                // Prevent deselection if it's the only selected option
+                //prevent deselection if it's the only selected option
                 return;
             }
 
@@ -16,10 +16,10 @@
                 const max = Math.max(lastSelected, value);
 
                 if (selectedItems.includes(value.toString())) {
-                    // If clicked value is already selected, remove the range except the clicked one
+                    //if clicked value is already selected, remove the range except the clicked one
                     selectedItems.splice(0, selectedItems.length, value.toString());
                 } else {
-                    // If adding a new value, include the range
+                    //if adding a new value, include the range
                     const newRange = Array.from(
                         { length: max - min + 1 },
                         (_, i) => (min + i).toString()
@@ -27,11 +27,11 @@
                     selectedItems.splice(0, selectedItems.length, ...new Set([...selectedItems, ...newRange]));
                 }
             } else {
-                // Select only the clicked option if none are selected
+                //select only the clicked option if none are selected
                 selectedItems.splice(0, selectedItems.length, value.toString());
             }
 
-            // Update Active States
+            //update Active States
             options.forEach(opt => {
                 if (selectedItems.includes(opt.getAttribute("data-value"))) {
                     opt.classList.add("active");

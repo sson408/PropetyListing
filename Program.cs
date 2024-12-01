@@ -1,9 +1,8 @@
 using PropertyListing.Components;
 using PropertyListing.Interfaces;
 using PropertyListing.Services;
-using Blazorise;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
 
 //builder.Services
 //   .AddBlazorise(options =>

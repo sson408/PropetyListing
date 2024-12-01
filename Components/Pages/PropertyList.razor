@@ -1,17 +1,30 @@
 ﻿@using PropertyListing.Interfaces
 @using PropertyListing.Models;
 @using static PropertyListing.Dtos.PropertyDTO;
+
 @page "/"
 
 @inject IPropertyService PropertyService
-
+@inject IJSRuntime JS
 
 
 <div class="container">
     <h3>1 Bedroom Properties For Sale In New Zealand</h3>
     <div class="row mb-3">
-        <button class="btn btn-primary" id="btnFilter">Filter</button>
-        <span class="ml-3">Selected Filters: @selectedFilters</span>
+        <div class="d-flex align-items-center p-3 border rounded shadow-sm">
+            <button class="btn btn-primary d-flex align-items-center" id="btnFilter">
+                <i class="bi bi-funnel-fill mr-2"></i> Filters
+            </button>
+            <div class="d-flex flex-wrap align-items-center filter-details ml-3" id="filterDetailsContainer">
+                <span class="mx-2" id="tabDetailDisplay" data-bs-toggle="tooltip">Residential</span>
+                <span class="mx-2" id="locationDetailDisplay" data-bs-toggle="tooltip">all locations</span>
+                <span class="mx-2" id="priceDetailDisplay" data-bs-toggle="tooltip">any price</span>
+                <span class="mx-2" id="propertyTypeDetailDisplay" data-bs-toggle="tooltip">all types</span>
+                <span class="mx-2" id="bedroomDetailDisplay" data-bs-toggle="tooltip">any bed</span>
+                <span class="mx-2" id="bathroomDetailDisplay" data-bs-toggle="tooltip">any bath</span>
+                <span class="mx-2" id="landDetailDisplay" data-bs-toggle="tooltip">any land</span>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -79,12 +92,21 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-4">
-                        <label class="form-label text-center">Price</label>
+                    <div class="form-group mb-4 residential-filter-div">
+                        <label class="form-label text-center" style="margin-left: 45%;">Price</label>
                         <div id="priceSlider" class="price-slider"></div>
                         <div class="d-flex justify-content-between mt-2">
                             <span id="minPrice">$Any min</span>
                             <span id="maxPrice">$Any max</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4 rental-filter-div">
+                        <label class="form-label text-center" style="margin-left: 45%;">Weekly rent</label>
+                        <div id="weeklyRendSlider" class="weekly-rent-slider"></div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span id="weeklyRentMinPrice">$Any min</span>
+                            <span id="weeklyRentMaxPrice">$Any max</span>
                         </div>
                     </div>
 
@@ -97,31 +119,40 @@
                             <button class="filter-option" data-value="Unit">Unit</button>
                             <button class="filter-option" data-value="Townhouse">Townhouse</button>
                             <button class="filter-option" data-value="Apartment">Apartment</button>
-                            <button class="filter-option" data-value="Lifestyle">Lifestyle</button>
+                            <button class="filter-option residenttal-filter-option" data-value="Lifestyle">Lifestyle</button>
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
                         <label>Bedrooms</label>
                         <div class="d-flex flex-wrap bedroom-options-div" id="bedroomOptions">
-                            <button class="bedroom-option" data-value="1" title="1">1</button>
-                            <button class="bedroom-option" data-value="2" title="2">2</button>
-                            <button class="bedroom-option" data-value="3" title="3">3</button>
-                            <button class="bedroom-option" data-value="4" title="4">4</button>
-                            <button class="bedroom-option" data-value="5" title="5">5</button>
-                            <button class="bedroom-option" data-value="6" title="6+">6+</button>
+                            <button class="option bedroom-option" data-value="1" title="1">1</button>
+                            <button class="option bedroom-option" data-value="2" title="2">2</button>
+                            <button class="option bedroom-option" data-value="3" title="3">3</button>
+                            <button class="option bedroom-option" data-value="4" title="4">4</button>
+                            <button class="option bedroom-option" data-value="5" title="5">5</button>
+                            <button class="option bedroom-option" data-value="6" title="6+">6+</button>
                         </div>
                     </div>
 
                     <div class="form-group mb-4">
                         <label>Bathrooms</label>
                         <div class="d-flex flex-wrap bathroom-options-div" id="bathroomOptions">
-                            <button class="bathroom-option" data-value="1">1</button>
-                            <button class="bathroom-option" data-value="2">2</button>
-                            <button class="bathroom-option" data-value="3">3</button>
-                            <button class="bathroom-option" data-value="4">4</button>
-                            <button class="bathroom-option" data-value="5">5</button>
-                            <button class="bathroom-option" data-value="6">6+</button>
+                            <button class="option bathroom-option" data-value="1">1</button>
+                            <button class="option bathroom-option" data-value="2">2</button>
+                            <button class="option bathroom-option" data-value="3">3</button>
+                            <button class="option bathroom-option" data-value="4">4</button>
+                            <button class="option bathroom-option" data-value="5">5</button>
+                            <button class="option bathroom-option" data-value="6">6+</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4 rental-filter-div">
+                        <label>Furnished/Unfurnished</label>
+                        <div class="d-flex flex-wrap gap-2" id="furnishingOptions">
+                            <button class="filter-option" data-sort="Furnished">Furnished</button>
+                            <button class="filter-option" data-sort="Unfurnished">Unfurnished</button>
+
                         </div>
                     </div>
 
@@ -135,12 +166,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-4">
-                        <label>Keywords</label>
-                        <input type="text" class="form-control" placeholder="e.g. pool, views" />
-                    </div>
-
-                    <div class="form-group mb-4">
+                    <div class="form-group mb-4 residential-filter-div">
                         <label>Search only</label>
                         <div class="d-flex flex-wrap gap-2" id="viewTypeOptions">
                             <button class="filter-option">Open homes</button>
@@ -148,7 +174,20 @@
                         </div>
                     </div>
 
+                    <div class="form-group mb-4 rental-filter-div">
+                        <label>Search only</label>
+                        <div class="d-flex flex-wrap gap-2" id="rentalViewTypeOptions">
+                            <button class="filter-option">Available Now</button>
+                            <button class="filter-option">Pets allowed</button>
+                        </div>
+                    </div>
+
                     <div class="form-group mb-4">
+                        <label>Keywords</label>
+                        <input type="text" class="form-control" id="keywordInput" placeholder="e.g. pool, views" />
+                    </div>
+
+                    <div class="form-group mb-4 residential-filter-div">
                         <label class="form-label text-center">Land area</label>
                         <div id="landAreaSlider" class="landArea-slider"></div>
                         <div class="d-flex justify-content-between mt-2">
@@ -157,10 +196,10 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-secondary mt-3 btn-reset" id="resetFiltersBtn">Reset filters</button>
+                    <button class="btn btn-secondary mt-3 btn-reset" id="btnResetFilters">Reset filters</button>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Apply Filters</button>
+                    <button type="button" class="btn btn-primary" @onclick="OnApplyFilterClicked">Apply Filters</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -186,14 +225,52 @@
     </div>
 </div>
 
+<input type="hidden" id="PropertyListingTypeName" />
+<input type="hidden" id="Locations" />
+<input type="hidden" id="MinPrice" />
+<input type="hidden" id="MaxPrice" />
+<input type="hidden" id="PropertyTypeNames" />
+<input type="hidden" id="MinBedrooms" />
+<input type="hidden" id="MaxBedrooms" />
+<input type="hidden" id="MinBathrooms" />
+<input type="hidden" id="MaxBathrooms" />
+<input type="hidden" id="SortBy" />
+<input type="hidden" id="SearchBy" />
+<input type="hidden" id="Keywords" />
+<input type="hidden" id="MinLandArea" />
+<input type="hidden" id="MaxLandArea" />
+
+
 @code {
     private List<SimplePropertyDtoSummary> filteredProperties;
-    private string propertyTypeFilter = string.Empty;
-    private string selectedFilters = "";
 
     protected override void OnInitialized()
     {
         filteredProperties = PropertyService.ListAll();
     }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initializeJavaScriptEffects");
+        }
+    }
+
+    private async Task OnApplyFilterClicked()
+    {
+        await JS.InvokeVoidAsync("hideModal", "filterModal");
+        await JS.InvokeVoidAsync("updateFilterDetailDisplay");
+        //await JS.InvokeVoidAsync("getFilterDetails");
+
+        var filterDetails = await JS.InvokeAsync<PropertySearchOptionsSummary>("getFilterDetails");
+
+        filteredProperties = PropertyService.ListAll();
+
+        StateHasChanged();
+    }
+
+
 
 }

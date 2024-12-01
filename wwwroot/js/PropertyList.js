@@ -3,16 +3,33 @@ import * as AddressData from "./Address.js";
 import { rangeSelect } from "./Component/RangeSelect.js";
 const locations = AddressData.locations;
 let currentLevel = locations;
+const minPrice = 0;
+const maxPrice = 10000000;
+const minWeeklyRent = 0;
+const maxWeeklyRent = 10000;
+const minLandArea = 0;
+const maxLandArea = 100000;
 let breadcrumb = ["Regions & Suburbs"];
 let selectedItems = [];
+let selectedLocations = [];
 let selectedTab = "Residential"
 let priceSlider = null;
+let weeklyRentSlider = null;
 let landAreaSlider = null;
 let selectedBedrooms = [];
 let selectedBathrooms = [];
-let selectedPropertyTypes = [];
+let selectedPropertyTypes = ["All"];
 let selectedSort = "Newest";
-const selectedViewTypes = [];
+let selectedFurnishings = "";
+let selectedViewTypes = [];
+let rentalSelectedViewTypes = [];
+
+
+function initTooltip() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+}
+
 function setupTabs() {
     const tabs = document.querySelectorAll(".property-tab");
 
@@ -26,20 +43,67 @@ function setupTabs() {
 
             // Get the selected tab type
             selectedTab = event.target.getAttribute("data-type");
-            //console.log(`Selected Tab: ${selectedTab}`); 
+            //console.log(`Selected Tab: ${selectedTab}`);
+
+            // Show or hide the filter details based on the selected tab
+            if (selectedTab === "Residential") {
+                showResidentialFilterDetail();
+            } else {
+                showRentalFilterDetail();
+            }
         });
     });
 }
 
-function showResidentialFilterOptions() { }
+function showResidentialFilterDetail() {
+    //hide rental filter detail
+    const rentalFilterDetail = document.querySelectorAll(".rental-filter-div");
+    rentalFilterDetail.forEach(l => {
+        l.classList.add("display-none")
+    });
 
-function showRentalFilterOptions() { }
+
+    //show residential filter detail
+    const residentialFilterDetail = document.querySelectorAll(".residential-filter-div");
+    residentialFilterDetail.forEach(l => {
+        l.classList.remove("display-none")
+    });
+
+    //show residential filter options
+    const residentialFilterOptions = document.querySelectorAll(".residenttal-filter-option");
+    residentialFilterOptions.forEach(option => {
+        option.classList.remove("display-none");
+    });
+
+
+}
+
+function showRentalFilterDetail() {
+
+    //hide residential filter detail
+    const residentialFilterDetail = document.querySelectorAll(".residential-filter-div");
+    residentialFilterDetail.forEach(l => {
+        l.classList.add("display-none")
+    });
+
+    //hide residential filter options
+    const residentialFilterOptions = document.querySelectorAll(".residenttal-filter-option");
+    residentialFilterOptions.forEach(option => {
+        option.classList.add("display-none");
+    });  
+
+
+    //show rental filter detail
+    const rentalFilterDetail = document.querySelectorAll(".rental-filter-div");
+    rentalFilterDetail.forEach(l => {
+        l.classList.remove("display-none")
+    });
+   
+}
 
 
 function initlocationInputSearch() {
-    const locations = AddressData.locations;
-    const flatLocations = flattenLocations(locations);
-
+    const flatLocations = flattenLocations(AddressData.locations);
 
     $("#locationInput").autocomplete({
         source: function (request, response) {
@@ -50,6 +114,7 @@ function initlocationInputSearch() {
             response(matches);
         },
         focus: function () {
+
             // Prevent value from being inserted on focus
             return false;
         },
@@ -69,18 +134,20 @@ function initlocationInputSearch() {
     });
 }
 
+
+
 function initPirceSlider() {
     priceSlider = document.getElementById("priceSlider");
-    const minPrice = document.getElementById("minPrice");
-    const maxPrice = document.getElementById("maxPrice");
+    const minPriceObj = document.getElementById("minPrice");
+    const maxPriceObj = document.getElementById("maxPrice");
 
     // Initialize the slider
     noUiSlider.create(priceSlider, {
-        start: [0, 10000000], 
+        start: [minPrice, maxPrice], 
         connect: true,
         range: {
-            min: 0,
-            max: 10000000
+            min: minPrice,
+            max: maxPrice
         },
         step: 50000,
         tooltips: [false, false],
@@ -102,31 +169,76 @@ function initPirceSlider() {
     // Update the labels dynamically on slider value changes
     priceSlider.noUiSlider.on("update", function (values, handle) {
         // Show actual slider values
-        minPrice.textContent = numeral(values[0]).format('$0,0');
-        maxPrice.textContent = numeral(values[1]).format('$0,0');        
+        minPriceObj.textContent = numeral(values[0]).format('$0,0');
+        maxPriceObj.textContent = numeral(values[1]).format('$0,0');        
     });
 
     // Ensure that values are set properly after user interaction
     priceSlider.noUiSlider.on("set", function () {
         if (!priceSlider) return
         const values = priceSlider.noUiSlider.get();
-        minPrice.textContent = numeral(values[0]).format('$0,0');
-        maxPrice.textContent = numeral(values[1]).format('$0,0');
+        minPriceObj.textContent = numeral(values[0]).format('$0,0');
+        maxPriceObj.textContent = numeral(values[1]).format('$0,0');
     });
+}
+
+function initWeeklyRentSlider() {
+    weeklyRentSlider = document.getElementById("weeklyRendSlider");
+    const minWeeklyRentObj = document.getElementById("weeklyRentMinPrice");
+    const maxWeeklyRentObj = document.getElementById("weeklyRentMaxPrice");
+
+    // Initialize the slider
+    noUiSlider.create(weeklyRentSlider, {
+        start: [minWeeklyRent, maxWeeklyRent], 
+        connect: true,
+        range: {
+            min: minWeeklyRent,
+            max: maxWeeklyRent
+        },
+        step: 25,
+        tooltips: [false, false],
+        format: {
+            to: function (value) {
+                // Use numeral to format value as currency
+                return numeral(value).format('$0,0');
+            },
+            from: function (value) {          
+                if (typeof value === "string" && value.includes("$")) {
+                    return numeral(value.replace("$", "").trim()).value();
+                }
+                return Number(value) || 0;
+            }
+        }
+    });
+
+    weeklyRentSlider.noUiSlider.on("update", function (values, handle) {
+        // Show actual values
+        minWeeklyRentObj.textContent = numeral(values[0]).format('$0,0');
+        maxWeeklyRentObj.textContent = numeral(values[1]).format('$0,0');
+    });
+
+    weeklyRentSlider.noUiSlider.on("set", function () {
+        if (!weeklyRentSlider) return
+        const values = weeklyRentSlider.noUiSlider.get();
+        minWeeklyRentObj.textContent = numeral(values[0]).format('$0,0');
+        maxWeeklyRentObj.textContent = numeral(values[1]).format('$0,0');
+    });
+
+
 }
 
 function initLandAreaSlider() {
     landAreaSlider = document.getElementById("landAreaSlider");
-    const minLandArea = document.getElementById("minArea");
-    const maxLandArea = document.getElementById("maxArea");
+    const minLandAreaObj = document.getElementById("minArea");
+    const maxLandAreaObj = document.getElementById("maxArea");
 
     // Initialize the slider
     noUiSlider.create(landAreaSlider, {
-        start: [0, 100000], 
+        start: [minLandArea, maxLandArea], 
         connect: true,
         range: {
-            min: 0,
-            max: 100000
+            min: minLandArea,
+            max: maxLandArea
         },
         step: 100,
         tooltips: [false, false],
@@ -146,15 +258,15 @@ function initLandAreaSlider() {
 
     landAreaSlider.noUiSlider.on("update", function (values, handle) {
         // Show actual values
-        minLandArea.textContent = numeral(values[0]).format('0,0');
-        maxLandArea.textContent = numeral(values[1]).format('0,0');
+        minLandAreaObj.textContent = numeral(values[0]).format('0,0');
+        maxLandAreaObj.textContent = numeral(values[1]).format('0,0');
     });
 
     landAreaSlider.noUiSlider.on("set", function () {
         if (!landAreaSlider) return
         const values = landAreaSlider.noUiSlider.get();
-        minLandArea.textContent = numeral(values[0]).format('0,0');
-        maxLandArea.textContent = numeral(values[1]).format('0,0');
+        minLandAreaObj.textContent = numeral(values[0]).format('0,0');
+        maxLandAreaObj.textContent = numeral(values[1]).format('0,0');
     });
 
     
@@ -202,6 +314,27 @@ function initBathroomSelect() {
     rangeSelect("bathroomOptions", selectedBathrooms);
 }
 
+function initFurnishingSelect() {
+    const furnishingOptions = document.querySelectorAll("#furnishingOptions .filter-option");
+
+    furnishingOptions.forEach(option => {
+
+        option.addEventListener("click", function () {
+            //remove "active" class from all buttons
+            furnishingOptions.forEach(opt => opt.classList.remove("active"));
+
+            //add "active" class to the clicked button
+            this.classList.add("active");
+
+            //update the currently selected option
+            selectedFurnishings = this.getAttribute("data-value");
+
+        });
+
+    });
+
+}
+
 function initSortSelect() {
     const sortOptions = document.querySelectorAll("#sortOptions .filter-option");
 
@@ -242,6 +375,27 @@ function initViewTypeSelect() {
     });
 }
 
+function initRentalViewTypeSelect() {
+    const rentalViewTypeOptions = document.querySelectorAll("#rentalViewTypeOptions .filter-option");
+
+    rentalViewTypeOptions.forEach(option => {
+        option.addEventListener("click", function () {
+            const value = this.textContent.trim();
+
+            //toggle the active state
+            if (this.classList.contains("active")) {
+                this.classList.remove("active");
+                //remove from the selected options
+                const index = rentalSelectedViewTypes.indexOf(value);
+                if (index > -1) rentalSelectedViewTypes.splice(index, 1);
+            } else {
+                this.classList.add("active");
+                rentalSelectedViewTypes.push(value);
+            }
+        });
+    });
+
+}
 
 function showModal(modalId) {
     const modal = new bootstrap.Modal(document.getElementById(modalId), {
@@ -382,22 +536,269 @@ function updateLocationInput() {
     }
 }
 
-//// Confirm the selection
-//function confirmSelection() {
-//    alert(`You selected: ${selectedItems.join(", ")}`);
-//    document.querySelector("#locationModal .btn-close").click(); // Close the modal
-//    renderList(); // Reset the list
-//}
+//show filter detail based on the selected tab
+function updateFilterDetailDisplay() {
+    const filterDetailsContainer = document.getElementById("filterDetailsContainer");
+
+
+    //show selected filter details(rental or residential)
+
+    const isResidential = selectedTab === "Residential";
+
+    //tab details
+    const tabDetails = document.getElementById("tabDetailDisplay");
+    if (tabDetails) {
+        tabDetails.textContent = isResidential ? "Residential" : "Rental";
+    }
+
+    //location details
+    const locationDetailDisplay = document.getElementById("locationDetailDisplay");
+    if (locationDetailDisplay) {
+        const locationText = selectedItems.length > 0 ? selectedItems.join(", ") : "all locations";
+        locationDetailDisplay.textContent = locationText;
+        locationDetailDisplay.setAttribute("title", locationText);
+        new bootstrap.Tooltip(locationDetailDisplay);
+    }
+
+    if (isResidential) {
+        //price details
+        const priceDetailDisplay = document.getElementById("priceDetailDisplay");
+        let priceDisplayText = "any price";
+        if (priceSlider && priceDetailDisplay) {
+            const priceRange = priceSlider.noUiSlider.get();
+            const minPriceValue = numeral(priceRange[0]).value();
+            const maxPriceValue = numeral(priceRange[1]).value();
+            priceDisplayText = minPriceValue === minPrice && maxPriceValue === maxPrice ? "any price" : `$${numeral(priceRange[0]).format("0,0")} - $${numeral(priceRange[1]).format("0,0")}`;   
+        }
+
+        priceDetailDisplay.textContent = priceDisplayText;
+        priceDetailDisplay.setAttribute("title", priceDisplayText);
+        new bootstrap.Tooltip(priceDetailDisplay);
+    }
+    else {
+        //weekly rent details
+        const weeklyRentDetailDisplay = document.getElementById("priceDetailDisplay");
+        let weeklyRentDisplayText = "any rent";
+        if (weeklyRentSlider && weeklyRentDetailDisplay) {
+            const weeklyRentRange = weeklyRentSlider.noUiSlider.get();
+            const minWeeklyRentValue = numeral(weeklyRentRange[0]).value();
+            const maxWeeklyRentValue = numeral(weeklyRentRange[1]).value();
+            weeklyRentDisplayText = minWeeklyRentValue === minWeeklyRent && maxWeeklyRentValue === maxWeeklyRent ? "any rent" : `$${numeral(weeklyRentRange[0]).format("0,0")} - $${numeral(weeklyRentRange[1]).format("0,0")}`;          
+        }
+        weeklyRentDetailDisplay.textContent = weeklyRentDisplayText;
+        weeklyRentDetailDisplay.setAttribute("title", weeklyRentDisplayText);
+        new bootstrap.Tooltip(weeklyRentDetailDisplay);
+    }
+
+    //property type details
+    const propertyTypeDetailDisplay = document.getElementById("propertyTypeDetailDisplay");
+    if (propertyTypeDetailDisplay) {
+        const propertyTypeText =
+            selectedPropertyTypes.length > 0 && !selectedPropertyTypes.includes("All")
+                ? selectedPropertyTypes.join(", ")
+                : "all types";
+        propertyTypeDetailDisplay.textContent = propertyTypeText;
+        propertyTypeDetailDisplay.setAttribute("title", propertyTypeText);
+        new bootstrap.Tooltip(propertyTypeDetailDisplay);
+    }
+
+    //bedroom details
+    const bedroomDetailDisplay = document.getElementById("bedroomDetailDisplay");
+    if (bedroomDetailDisplay) {
+        const bedroomText =
+            selectedBedrooms.length > 0
+                ? `${Math.min(...selectedBedrooms)}-${Math.max(...selectedBedrooms)} bed`
+                : "any bed";
+        bedroomDetailDisplay.textContent = bedroomText;
+    }
+
+    //bathroom details
+    const bathroomDetailDisplay = document.getElementById("bathroomDetailDisplay");
+    if (bathroomDetailDisplay) {
+        const bathroomText =
+            selectedBathrooms.length > 0
+                ? `${Math.min(...selectedBathrooms)}-${Math.max(...selectedBathrooms)} bath`
+                : "any bath";
+        bathroomDetailDisplay.textContent = bathroomText;
+    }
+
+    //land details
+    const landDetailDisplay = document.getElementById("landDetailDisplay");
+    if (isResidential) {      
+        let landDisplayText = "any land";
+        if (landAreaSlider && landDetailDisplay) {
+            const landRange = landAreaSlider.noUiSlider.get();
+            const minLandValue = numeral(landRange[0]).value();
+            const maxLandValue = numeral(landRange[1]).value();
+            landDisplayText = minLandValue === minLandArea && maxLandValue === maxLandArea ? "any land" : `${numeral(landRange[0]).format("0,0")} - ${numeral(landRange[1]).format("0,0")} m²`;
+        }
+
+        landDetailDisplay.textContent = landDisplayText;
+        landDetailDisplay.setAttribute("title", landDisplayText);
+        new bootstrap.Tooltip(landDetailDisplay);
+    }
+    else {
+        //hide land area details for rental
+        landDetailDisplay.classList.add("display-none");       
+    }
+
+}
+
+function onBtnApplyFilterClick() {
+    //hide the filter modal
+    //hideModal('filterModal');
+    //updateFilterDetailDisplay(); 
+
+   // getFilterDetails()
+
+}
+
+function getFilterDetails() {
+
+    //update hidden fields with filter details
+    //document.getElementById("PropertyListingTypeName").value = selectedTab;
+    //document.getElementById("Locations").value = selectedItems.join(",");
+    //document.getElementById("MinPrice").value = priceSlider ? numeral(priceSlider.noUiSlider.get()[0]).value() : minPrice;
+    //document.getElementById("MaxPrice").value = priceSlider ? numeral(priceSlider.noUiSlider.get()[1]).value() : maxPrice;
+    //document.getElementById("PropertyTypeNames").value = selectedPropertyTypes.join(",");
+    //document.getElementById("MinBedrooms").value = selectedBedrooms.length > 0 ? Math.min(...selectedBedrooms) : 0;
+    //document.getElementById("MaxBedrooms").value = selectedBedrooms.length > 0 ? Math.max(...selectedBedrooms) : 0;
+    //document.getElementById("MinBathrooms").value = selectedBathrooms.length > 0 ? Math.min(...selectedBathrooms) : 0;
+    //document.getElementById("MaxBathrooms").value = selectedBathrooms.length > 0 ? Math.max(...selectedBathrooms) : 0;
+    //document.getElementById("SortBy").value = selectedSort;
+    //document.getElementById("SearchBy").value = selectedTab === "Residential" ? selectedViewTypes.join(",") : rentalSelectedViewTypes.join(",");
+    //document.getElementById("Keywords").value = document.getElementById("keywordInput").value;
+    //document.getElementById("MinLandArea").value = landAreaSlider ? numeral(landAreaSlider.noUiSlider.get()[0]).value() : minLandArea;
+    //document.getElementById("MaxLandArea").value = landAreaSlider ? numeral(landAreaSlider.noUiSlider.get()[1]).value() : maxLandArea;
+
+
+    
+    return {
+        PropertyListingTypeName: selectedTab,
+        Locations: selectedItems.join(","),
+        MinPrice: priceSlider ? numeral(priceSlider.noUiSlider.get()[0]).value() : minPrice,
+        MaxPrice: priceSlider ? numeral(priceSlider.noUiSlider.get()[1]).value() : maxPrice,
+        PropertyTypeNames: selectedPropertyTypes.join(","),
+        MinBedrooms: selectedBedrooms.length > 0 ? Math.min(...selectedBedrooms) : 0,
+        MaxBedrooms: selectedBedrooms.length > 0 ? Math.max(...selectedBedrooms) : 0,
+        MinBathrooms: selectedBathrooms.length > 0 ? Math.min(...selectedBathrooms) : 0,
+        MaxBathrooms: selectedBathrooms.length > 0 ? Math.max(...selectedBathrooms) : 0,
+        SortBy: selectedSort,
+        SearchBy: selectedTab === "Residential" ? selectedViewTypes.join(",") : rentalSelectedViewTypes.join(","),
+        Keywords: document.getElementById("keywordInput").value,
+        MinLandArea: landAreaSlider ? numeral(landAreaSlider.noUiSlider.get()[0]).value() : minLandArea,
+        MaxLandArea: landAreaSlider ? numeral(landAreaSlider.noUiSlider.get()[1]).value() : maxLandArea
+    }
+
+}
+
+
+function resetFilter() {
+    // Reset sliders
+    if (priceSlider) priceSlider.noUiSlider.set([0, 10000000]);
+    if (weeklyRentSlider) weeklyRentSlider.noUiSlider.set([0, 10000]);
+    if (landAreaSlider) landAreaSlider.noUiSlider.set([0, 100000]);
+
+    // Clear selected items
+    selectedItems = [];
+    selectedLocations = [];
+    selectedBedrooms = [];
+    selectedBathrooms = [];
+    selectedPropertyTypes = ["All"];
+    selectedSort = "Newest";
+    selectedFurnishings = "";
+    selectedViewTypes = [];
+    rentalSelectedViewTypes = [];
+
+    // Reset text input
+    const locationInput = document.getElementById("locationInput");
+    if (locationInput) {
+        locationInput.value = "";
+    }
+
+    //reset property type options
+    const propertyTypeOptions = document.querySelectorAll("#propertyTypeOptions .filter-option");
+    propertyTypeOptions.forEach(option => option.classList.remove("active"));
+
+    const allOption = document.querySelector("#propertyTypeOptions .filter-option[data-value='All']");
+    if (allOption) {
+        allOption.classList.add("active");
+    }
+
+    //reset bedroom and bathroom options
+    const bedroomOptions = document.querySelectorAll("#bedroomOptions .bedroom-option");
+    const bathroomOptions = document.querySelectorAll("#bathroomOptions .bathroom-option");
+
+    //clear active class from all bedroom options
+    if (bedroomOptions) {
+        bedroomOptions.forEach(option => option.classList.remove("active"));
+    }
+
+    //clear active class from all bathroom options
+    if (bathroomOptions) {
+        bathroomOptions.forEach(option => option.classList.remove("active"));
+    }
+
+    //reset furnishing options
+    const furnishingOptions = document.querySelectorAll("#furnishingOptions .filter-option");
+    furnishingOptions.forEach(option => option.classList.remove("active"));
+
+    //reset sort options
+    const sortOptions = document.querySelectorAll("#sortOptions .filter-option");
+    sortOptions.forEach(option => option.classList.remove("active"));
+
+    const newestOption = document.querySelector("#sortOptions .filter-option[data-sort='Newest']");
+    if (newestOption) {
+        newestOption.classList.add("active");
+    }
+
+    //reset view type options
+    const viewTypeOptions = document.querySelectorAll("#viewTypeOptions .filter-option");
+    viewTypeOptions.forEach(option => option.classList.remove("active"));
+
+    const rentalViewTypeOptions = document.querySelectorAll("#rentalViewTypeOptions .filter-option");
+    rentalViewTypeOptions.forEach(option => option.classList.remove("active"));
+
+    //clear keyword search
+    const keywordInput = document.getElementById("keywordInput");
+    if (keywordInput) {
+        keywordInput.value = "";
+    }
+
+    //reset breadcrumb and current level
+    breadcrumb = ["Regions & Suburbs"];
+    currentLevel = locations;
+
+    //re-render the location list
+    renderList();
+
+    //reset active tab
+    const tabs = document.querySelectorAll(".property-tab");
+    tabs.forEach(tab => tab.classList.remove("active"));
+
+    //refault to Residential tab
+    const residentialTab = document.querySelector(".property-tab[data-type='Residential']");
+    if (residentialTab) {
+        residentialTab.classList.add("active");
+    }
+    selectedTab = "Residential";
+    showResidentialFilterDetail();
+}
 
 function setup() {
+    initTooltip();
     setupTabs();
+    showResidentialFilterDetail();
     initlocationInputSearch();
     initPirceSlider();
+    initWeeklyRentSlider();
     initPropertyTypeSelect();
     initBedroomSelect();
     initBathroomSelect();
     initSortSelect();
+    initFurnishingSelect();
     initViewTypeSelect();
+    initRentalViewTypeSelect(); 
     initLandAreaSlider();
 }
 
@@ -405,9 +806,7 @@ function eventBinding() {
     document.getElementById("btnFilter").addEventListener("click", function () {
         showModal('filterModal');
     });
-    document.getElementById("btnBack").addEventListener("click", function () {
-        onBtnBackClick();
-    });
+    document.getElementById("btnBack").addEventListener("click", onBtnBackClick);
     document.getElementById("btnChooseLocation").addEventListener("click", function () {
         showModal('locationModal');
         hideModal('filterModal');
@@ -418,21 +817,31 @@ function eventBinding() {
         hideModal('locationModal');
         showModal('filterModal');
     });
- 
+
+    //document.getElementById("btnApplyFilter").addEventListener("click", onBtnApplyFilterClick);
+
+    document.getElementById("btnResetFilters").addEventListener("click", resetFilter);
+
 }
 
 function postInit() {
     renderList();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+//document.addEventListener("DOMContentLoaded", function () {
+//    setup();
+//    eventBinding();
+//    postInit();
+
+//});
+
+
+window.initializeJavaScriptEffects = function () {
     setup();
     eventBinding();
     postInit();
+}
 
-});
-
-
-
-
-
+window.hideModal = hideModal;
+window.updateFilterDetailDisplay = updateFilterDetailDisplay;
+window.getFilterDetails = getFilterDetails;

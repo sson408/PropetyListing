@@ -202,9 +202,9 @@ ul li:hover {
 }
 
 
-.price-slider {
+.price-slider, .landArea-slider {
     margin: 0 auto;
-    width: 90%;
+    width: 95%;
 }
 
 .ui-autocomplete {
@@ -222,6 +222,57 @@ ul li:hover {
 .btn-reset {
     margin-left:40%;
 }
+.display-none {
+    display:none;
+}
+
+
+.filter-details {
+    margin-left: 100px
+}
+
+.filter-details span {
+    color: #007bff;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 150px;
+    display: inline-block; 
+    vertical-align: middle;
+}
+
+.filter-details span:not(:last-child)::after {
+    margin-left: 8px;
+    margin-right: 8px;
+    color: #ccc;
+}
+
+
+.btn-primary {
+    font-weight: bold;
+    padding: 8px 12px;
+}
+
+.border {
+    background-color: #fff;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.d-flex {
+    display: flex;
+    gap: 10px;
+}
+
+
+.tooltip {
+    position: relative;
+    cursor: pointer;
+}
+
 
 @media (max-width: 600px) {
     .d-flex {
