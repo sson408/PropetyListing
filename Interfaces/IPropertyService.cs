@@ -5,6 +5,6 @@ namespace PropertyListing.Interfaces
 {
     public interface IPropertyService
     {
-        List<SimplePropertyDtoSummary> ListAll();
+        List<SimplePropertyDtoSummary> ListAll(PropertySearchOptionsSummary filterDetails);
     }
 }

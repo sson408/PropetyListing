@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="Data\rental sample data.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
