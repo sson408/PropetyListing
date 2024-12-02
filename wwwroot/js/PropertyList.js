@@ -661,6 +661,9 @@ function updateFilterDetailDisplay() {
         landDetailDisplay.textContent = landDisplayText;
         landDetailDisplay.setAttribute("title", landDisplayText);
         new bootstrap.Tooltip(landDetailDisplay);
+
+        //show land area details for residential
+        landDetailDisplay.classList.remove("display-none");
     }
     else {
         //hide land area details for rental
