@@ -40,21 +40,7 @@
                         <div class="carousel-indicators">
                             @for (int i = 0; i < property.ImageUrls.Count; i++)
                             {
-                                <div class="carousel-item @(i == 0 ? "active" : "")">
-                                    <div class="image-container position-relative">
-                                        <!-- Loading Spinner -->
-                                        <div class="loading-spinner" id="spinner-@i">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                        <!-- Image -->
-                                        <img src="@property.ImageUrls[i]" class="d-block w-100" alt="Property Image @(i + 1)"
-                                             onload="hideImageSpinner(@i)">
-                                    </div>
-                                </div>
-
-                                @* <button type="button" data-bs-target="#@carouselId" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="true" aria-label="Slide @(i + 1)"></button> *@
+                                <button type="button" data-bs-target="#@carouselId" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="true" aria-label="Slide @(i + 1)"></button>
                             }
                         </div>
                         <div class="carousel-inner">

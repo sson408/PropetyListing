@@ -30,13 +30,6 @@ function initTooltip() {
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 }
 
-function hideImageSpinner(index) {
-    const spinner = document.getElementById(`spinner-${index}`);
-    if (spinner) {
-        spinner.classList.add("hidden");
-    }
-}
-
 function setupTabs() {
     const tabs = document.querySelectorAll(".property-tab");
 
@@ -852,4 +845,3 @@ window.initializeJavaScriptEffects = function () {
 window.hideModal = hideModal;
 window.updateFilterDetailDisplay = updateFilterDetailDisplay;
 window.getFilterDetails = getFilterDetails;
-window.hideImageSpinner = hideImageSpinner;
