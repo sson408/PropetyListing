@@ -54,6 +54,126 @@ namespace PropertyListing.Services
                 var properties = response?.DataList ?? new List<RealEstateProperty>();
 
                 //add filters
+                if (filterDetails != null)
+                {
+                    if (filterDetails.MinPrice > 0) {
+                        properties.RemoveAll(l =>
+                        {
+                            
+                            if (decimal.TryParse(l.Price.Replace("$", "").Replace(",", ""), out decimal priceValue))
+                            {
+                                return priceValue < filterDetails.MinPrice;
+                            }
+                            
+                            return false;
+                        });
+                    }
+
+                    if (filterDetails.MaxPrice > 0 && filterDetails.MaxPrice < 10000000)
+                    {
+                        properties.RemoveAll(l =>
+                        {
+                            if (decimal.TryParse(l.Price.Replace("$", "").Replace(",", ""), out decimal priceValue))
+                            {
+                                return priceValue > filterDetails.MaxPrice;
+                            }
+
+                            return false;
+                        });
+                    }
+
+                    if (filterDetails.MinBedrooms > 0)
+                    {
+                        properties.RemoveAll(l => l.BedroomCount < filterDetails.MinBedrooms);
+                    }
+
+                    if (filterDetails.MaxBedrooms > 0)
+                    {
+                        properties.RemoveAll(l => l.BedroomCount > filterDetails.MaxBedrooms);
+                    }
+
+                    if (filterDetails.MinBathrooms > 0)
+                    {
+                        properties.RemoveAll(l => l.BathroomCount < filterDetails.MinBathrooms);
+                    }
+
+                    if (filterDetails.MaxBathrooms > 0)
+                    {
+                        properties.RemoveAll(l => l.BathroomCount > filterDetails.MaxBathrooms);
+                    }
+
+                    if (filterDetails.MinLandArea > 0)
+                    {
+                        properties.RemoveAll(l => l.LandArea < filterDetails.MinLandArea);                       
+                    }
+
+                    if (filterDetails.MaxLandArea > 0 && filterDetails.MaxLandArea < 100000)
+                    {
+                        properties.RemoveAll(l => l.LandArea > filterDetails.MaxLandArea);
+                    }
+
+                    if (!string.IsNullOrEmpty(filterDetails.Keywords))
+                    {
+                        var filterKeywords = filterDetails.Keywords.ToLower().Split(" ");
+                        foreach (var word in filterKeywords) {
+                            properties.RemoveAll(l => !l.AdHeadline.ToLower().Contains(word)
+                              && !l.AdSummary.ToLower().Contains(word)
+                              && !l.Street.ToLower().Contains(word));
+                        }
+          
+                    }
+                    //sort by
+                    if (!string.IsNullOrEmpty(filterDetails.SortBy))
+                    {
+                        var sortOptions = new Dictionary<string, Func<IEnumerable<RealEstateProperty>>>
+                        {
+                            { "newest", () => properties.OrderByDescending(l => l.PendingLiveDate) },
+                            { "oldest", () => properties.OrderBy(l => l.PendingLiveDate) },
+                            { "highest price", () => properties.OrderByDescending(l =>
+                                {
+                                    if (decimal.TryParse(l.Price, out decimal priceValue))
+                                    {
+                                        return priceValue;
+                                    }
+                                    return 0; 
+                                })
+                            },
+                            { "lowest price", () => properties.OrderBy(l =>
+                                {
+                                    if (decimal.TryParse(l.Price, out decimal priceValue))
+                                    {
+                                        return priceValue;
+                                    }
+                                    return 0;
+                                })
+                            }
+                        };
+
+                        var sortByDisplay = filterDetails.SortBy.Replace("_", " ").ToLower();
+
+                        if (sortOptions.TryGetValue(sortByDisplay, out var sortFunc))
+                        {
+                            properties = sortFunc().ToList(); 
+                        }
+                    }
+
+                    //search only
+                    //if (!string.IsNullOrEmpty(filterDetails.SearchBy))
+                    //{
+                    //    var searchByDisplay = filterDetails.SearchBy.Replace("_", " ");
+                    //    switch (searchByDisplay)
+                    //    {
+                    //        case "Open_homes":                             
+                    //            break;
+                    //        case "Mortgagee_sales":                              
+                    //            break;
+                    //        case "Available_now":                   
+                    //            break;
+                    //        case "Pets_allowed":                              
+                    //            break;
+                    //    }
+                    //}
+                }
 
 
                 result = properties.Select(l => new SimplePropertyDtoSummary

@@ -125,15 +125,40 @@ function initlocationInputSearch() {
             terms.push(""); 
             this.value = terms.join(", ");
 
+            // Update selected items and render selections
+            handleItemClick({
+                name: ui.item.value
+            });
+
             setTimeout(() => {
                 $(this).autocomplete("close");
-            }, 0);
+            }, 50);
 
             return false;
         }
     });
+
+
+    const locationInput = document.getElementById("locationInput");
+    locationInput.addEventListener(
+        "input",
+        debounce(function () {
+            synchronizeSelectedLocations(this.value);
+        }, 1000) 
+    );
 }
 
+function synchronizeSelectedLocations(inputValue) {
+    const currentValues = inputValue
+        .split(",")
+        .map(value => value.trim()) 
+        .filter(value => value);   
+
+
+    // Update UI and input value
+    renderSelections();
+    updateLocationInput();
+}
 
 
 function initPirceSlider() {
@@ -450,8 +475,8 @@ function handleItemClick(item) {
         breadcrumb.push(item.name);
         renderList();
     } else {
-        const allOfItem = currentLevel.find((loc) => loc.name.startsWith("All of"));
-        const isAllOfSelected = item.name === allOfItem.name
+        const allOfItem = currentLevel?.find((loc) => loc.name.startsWith("All of")) ?? null;
+        const isAllOfSelected = item?.name === allOfItem?.name;
 
         if (isAllOfSelected) {
             //clear other selections
@@ -459,7 +484,7 @@ function handleItemClick(item) {
         }
         else {
             //if other selections are selected, remove "All of" selection
-            const allOfItemIndex = selectedItems.indexOf(allOfItem.name);
+            const allOfItemIndex = selectedItems.indexOf(allOfItem?.name);
             if (allOfItemIndex > -1) {
                 selectedItems.splice(allOfItemIndex, 1);
             }
@@ -654,24 +679,6 @@ function onBtnApplyFilterClick() {
 }
 
 function getFilterDetails() {
-
-    //update hidden fields with filter details
-    //document.getElementById("PropertyListingTypeName").value = selectedTab;
-    //document.getElementById("Locations").value = selectedItems.join(",");
-    //document.getElementById("MinPrice").value = priceSlider ? numeral(priceSlider.noUiSlider.get()[0]).value() : minPrice;
-    //document.getElementById("MaxPrice").value = priceSlider ? numeral(priceSlider.noUiSlider.get()[1]).value() : maxPrice;
-    //document.getElementById("PropertyTypeNames").value = selectedPropertyTypes.join(",");
-    //document.getElementById("MinBedrooms").value = selectedBedrooms.length > 0 ? Math.min(...selectedBedrooms) : 0;
-    //document.getElementById("MaxBedrooms").value = selectedBedrooms.length > 0 ? Math.max(...selectedBedrooms) : 0;
-    //document.getElementById("MinBathrooms").value = selectedBathrooms.length > 0 ? Math.min(...selectedBathrooms) : 0;
-    //document.getElementById("MaxBathrooms").value = selectedBathrooms.length > 0 ? Math.max(...selectedBathrooms) : 0;
-    //document.getElementById("SortBy").value = selectedSort;
-    //document.getElementById("SearchBy").value = selectedTab === "Residential" ? selectedViewTypes.join(",") : rentalSelectedViewTypes.join(",");
-    //document.getElementById("Keywords").value = document.getElementById("keywordInput").value;
-    //document.getElementById("MinLandArea").value = landAreaSlider ? numeral(landAreaSlider.noUiSlider.get()[0]).value() : minLandArea;
-    //document.getElementById("MaxLandArea").value = landAreaSlider ? numeral(landAreaSlider.noUiSlider.get()[1]).value() : maxLandArea;
-
-
     
     return {
         PropertyListingTypeName: selectedTab,
@@ -692,6 +699,10 @@ function getFilterDetails() {
 
 }
 
+function areAllImagesLoaded() {
+    const images = document.querySelectorAll('.carousel-inner img');
+    return Array.from(images).every(img => img.complete);
+}
 
 function resetFilter() {
     // Reset sliders
@@ -836,6 +847,15 @@ function postInit() {
 //});
 
 
+function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+}
+
 window.initializeJavaScriptEffects = function () {
     setup();
     eventBinding();
@@ -845,3 +865,4 @@ window.initializeJavaScriptEffects = function () {
 window.hideModal = hideModal;
 window.updateFilterDetailDisplay = updateFilterDetailDisplay;
 window.getFilterDetails = getFilterDetails;
+window.areAllImagesLoaded = areAllImagesLoaded;

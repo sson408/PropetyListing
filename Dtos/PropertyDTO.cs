@@ -17,8 +17,8 @@
             public string PropertyListingTypeName { get; set; }
             public List<string> LocationList { get; set; }
             public string Locations { get; set; }
-            public double MinPrice { get; set; }
-            public double MaxPrice { get; set; }
+            public decimal MinPrice { get; set; }
+            public decimal MaxPrice { get; set; }
             public string PropertyTypeNames { get; set; }
             public int MinBedrooms { get; set; }
             public int MaxBedrooms { get; set; }
